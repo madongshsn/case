@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会计技能证书生成器</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  
+  <!-- 配置Tailwind -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1E3A8A', // 深蓝主色-代表专业
+            secondary: '#B8860B', // 金色-代表成就
+            accent: '#3B82F6',
+            neutral: '#F3F4F6',
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Georgia', 'Cambria', 'serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .certificate-border {
+        border-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="75" height="75"><path d="M0,0 L75,0 L75,75 L0,75 Z" fill="none" stroke="%23B8860B" stroke-width="2" stroke-dasharray="5,5"/></svg>') 25;
+      }
+      .gold-gradient {
+        background: linear-gradient(135deg, #f5d76e 0%, #f4d03f 50%, #d4ac0d 100%);
+      }
+      .shadow-elegant {
+        box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
+      }
+      .text-shadow {
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-inter min-h-screen">
+  <!-- 页面标题 -->
+  <header class="bg-primary text-white py-6 shadow-md">
+    <div class="container mx-auto px-4 md:px-8">
+      <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-center">
+        <i class="fa fa-certificate mr-3 text-secondary"></i>会计技能证书生成器
+      </h1>
+      <p class="text-center mt-2 text-gray-200">记录学习成果，见证成长足迹</p>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 md:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- 表单区域 -->
+      <div class="bg-white rounded-xl shadow-elegant p-6 md:p-8 order-2 lg:order-1">
+        <h2 class="text-2xl font-bold text-primary mb-6 flex items-center">
+          <i class="fa fa-pencil-square-o mr-2 text-secondary"></i>填写证书信息
+        </h2>
+        
+        <form id="certificateForm" class="space-y-6">
+          <!-- 学员姓名 -->
+          <div>
+            <label for="studentName" class="block text-gray-700 font-medium mb-2">学员姓名</label>
+            <input 
+              type="text" 
+              id="studentName" 
+              placeholder="请输入学员姓名" 
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
+              required
+            >
+          </div>
+          
+          <!-- 选择掌握的会计技能 -->
+          <div>
+            <label class="block text-gray-700 font-medium mb-2">掌握的会计技能</label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="flex items-center">
+                <input type="checkbox" id="skill1" value="会计5要素×借贷翻译术" class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded">
+                <label for="skill1" class="ml-2 text-gray-700">会计5要素×借贷翻译术</label>
+              </div>
+              <div class="flex items-center">
+                <input type="checkbox" id="skill2" value="财务报表编制与分析" class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded">
+                <label for="skill2" class="ml-2 text-gray-700">财务报表编制与分析</label>
+              </div>
+              <div class="flex items-center">
+                <input type="checkbox" id="skill3" value="成本核算与控制" class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded">
+                <label for="skill3" class="ml-2 text-gray-700">成本核算与控制</label>
+              </div>
+              <div class="flex items-center">
+                <input type="checkbox" id="skill4" value="税务筹划与申报" class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded">
+                <label for="skill4" class="ml-2 text-gray-700">税务筹划与申报</label>
+              </div>
+              <div class="flex items-center">
+                <input type="checkbox" id="skill5" value="预算编制与管理" class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded">
+                <label for="skill5" class="ml-2 text-gray-700">预算编制与管理</label>
+              </div>
+              <div class="flex items-center">
+                <input type="checkbox" id="skill6" value="审计原理与实务" class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded">
+                <label for="skill6" class="ml-2 text-gray-700">审计原理与实务</label>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 上传照片 -->
+          <div>
+            <label for="studentPhoto" class="block text-gray-700 font-medium mb-2">上传学员照片</label>
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer" id="photoUploadArea">
+              <input 
+                type="file" 
+                id="studentPhoto" 
+                accept="image/*" 
+                class="hidden"
+              >
+              <i class="fa fa-upload text-4xl text-gray-400 mb-2"></i>
+              <p class="text-gray-500">点击或拖拽照片到此处上传</p>
+              <p class="text-gray-400 text-sm mt-1">支持JPG、PNG格式</p>
+            </div>
+            <div id="photoPreviewContainer" class="mt-4 hidden">
+              <img id="photoPreview" src="" alt="学员照片预览" class="max-h-40 rounded-lg border border-gray-200">
+            </div>
+          </div>
+          
+          <!-- 证书日期 -->
+          <div>
+            <label for="certificateDate" class="block text-gray-700 font-medium mb-2">证书日期</label>
+            <input 
+              type="date" 
+              id="certificateDate" 
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
+            >
+          </div>
+          
+          <!-- 操作按钮 -->
+          <div class="pt-4 flex flex-col sm:flex-row gap-4">
+            <button 
+              type="button" 
+              id="generateBtn" 
+              class="flex-1 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 flex items-center justify-center"
+            >
+              <i class="fa fa-magic mr-2"></i>生成证书
+            </button>
+            <button 
+              type="button" 
+              id="downloadBtn" 
+              class="flex-1 bg-secondary hover:bg-secondary/90 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 flex items-center justify-center"
+              disabled
+            >
+              <i class="fa fa-download mr-2"></i>下载证书
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- 证书预览区域 -->
+      <div class="order-1 lg:order-2">
+        <h2 class="text-2xl font-bold text-primary mb-6 flex items-center">
+          <i class="fa fa-eye mr-2 text-secondary"></i>证书预览
+        </h2>
+        
+        <div class="relative bg-white rounded-xl shadow-elegant overflow-hidden transform transition-all duration-500 hover:scale-[1.01]">
+          <!-- 证书容器 -->
+          <div id="certificate" class="w-full aspect-[4/3] relative overflow-hidden">
+            <!-- 证书背景 -->
+            <div class="absolute inset-0 bg-gray-50 p-8 border-8 border-primary/10">
+              <!-- 装饰性边框 -->
+              <div class="absolute inset-6 border-2 border-dashed border-secondary/30 rounded"></div>
+              
+              <!-- 顶部装饰 -->
+              <div class="gold-gradient h-1 w-1/3 mx-auto rounded-full mb-8"></div>
+              
+              <!-- 证书标题 -->
+              <h3 class="text-[clamp(1.5rem,5vw,2.5rem)] font-bold text-primary text-center mb-2 text-shadow">会计技能证书</h3>
+              <p class="text-gray-600 text-center mb-8">SKILL CERTIFICATE</p>
+              
+              <!-- 证书内容 -->
+              <div class="text-center mb-8">
+                <p class="text-gray-700 text-lg mb-2">兹证明</p>
+                <p id="certName" class="text-[clamp(1.3rem,4vw,2rem)] font-bold text-primary mb-4">张三 同学</p>
+                <p class="text-gray-700 text-lg mb-2">已熟练掌握以下会计技能：</p>
+                <p id="certSkills" class="text-[clamp(1rem,3vw,1.3rem)] text-gray-800 font-medium mt-3 p-4 bg-white/70 inline-block rounded-lg shadow-sm">
+                  会计5要素×借贷翻译术
+                </p>
+              </div>
+              
+              <!-- 照片区域 -->
+              <div class="absolute right-12 top-1/2 transform -translate-y-1/3 w-32 h-40 border-4 border-white shadow-lg rounded overflow-hidden">
+                <img id="certPhoto" src="https://picsum.photos/200/250" alt="学员照片" class="w-full h-full object-cover">
+              </div>
+              
+              <!-- 底部信息 -->
+              <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-center w-full">
+                <div class="flex justify-center items-center gap-12 mb-4">
+                  <div>
+                    <p class="text-gray-600 text-sm">签发日期</p>
+                    <p id="certDate" class="text-gray-800 font-medium">2023年10月15日</p>
+                  </div>
+                  <div>
+                    <p class="text-gray-600 text-sm">证书编号</p>
+                    <p id="certId" class="text-gray-800 font-medium">ACCT-2023-1015</p>
+                  </div>
+                </div>
+                <div class="gold-gradient h-1 w-1/3 mx-auto rounded-full mt-6"></div>
+              </div>
+              
+              <!-- 角落装饰 -->
+              <div class="absolute top-8 left-8 text-secondary/20 text-4xl">
+                <i class="fa fa-bookmark"></i>
+              </div>
+              <div class="absolute top-8 right-8 text-secondary/20 text-4xl">
+                <i class="fa fa-bookmark"></i>
+              </div>
+              <div class="absolute bottom-8 left-8 text-secondary/20 text-4xl">
+                <i class="fa fa-bookmark"></i>
+              </div>
+              <div class="absolute bottom-8 right-8 text-secondary/20 text-4xl">
+                <i class="fa fa-bookmark"></i>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 加载动画 (默认隐藏) -->
+          <div id="loadingOverlay" class="absolute inset-0 bg-black/50 flex items-center justify-center hidden">
+            <div class="bg-white p-6 rounded-lg shadow-lg flex items-center">
+              <i class="fa fa-circle-o-notch fa-spin text-2xl text-primary mr-3"></i>
+              <p class="text-gray-700">正在生成证书...</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-6 bg-blue-50 border-l-4 border-primary p-4 rounded">
+          <h4 class="font-bold text-primary flex items-center">
+            <i class="fa fa-lightbulb-o mr-2"></i>使用提示
+          </h4>
+          <ul class="mt-2 text-gray-700 space-y-1 list-disc list-inside text-sm">
+            <li>填写信息并至少选择一项会计技能</li>
+            <li>上传清晰的照片可获得更好的证书效果</li>
+            <li>生成证书后可下载保存为图片格式</li>
+            <li>证书可用于个人学习成果展示</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-primary text-white py-6 mt-12">
+    <div class="container mx-auto px-4 md:px-8 text-center">
+      <p>© 2023 会计技能证书生成器 | 提升学习成就感</p>
+      <p class="text-sm text-gray-300 mt-2">用技术记录你的每一步成长</p>
+    </div>
+  </footer>
+
+  <script>
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      // 获取DOM元素
+      const form = document.getElementById('certificateForm');
+      const studentName = document.getElementById('studentName');
+      const studentPhoto = document.getElementById('studentPhoto');
+      const photoPreview = document.getElementById('photoPreview');
+      const photoPreviewContainer = document.getElementById('photoPreviewContainer');
+      const photoUploadArea = document.getElementById('photoUploadArea');
+      const certificateDate = document.getElementById('certificateDate');
+      const generateBtn = document.getElementById('generateBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const certificate = document.getElementById('certificate');
+      const certName = document.getElementById('certName');
+      const certSkills = document.getElementById('certSkills');
+      const certPhoto = document.getElementById('certPhoto');
+      const certDate = document.getElementById('certDate');
+      const certId = document.getElementById('certId');
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      
+      // 设置默认日期为今天
+      const today = new Date();
+      const formattedDate = today.toISOString().split('T')[0];
+      certificateDate.value = formattedDate;
+      
+      // 生成随机证书编号
+      function generateCertificateId() {
+        const prefix = 'ACCT';
+        const year = today.getFullYear();
+        const randomNum = Math.floor(1000 + Math.random() * 9000);
+        return `${prefix}-${year}-${randomNum}`;
+      }
+      
+      certId.textContent = generateCertificateId();
+      
+      // 更新证书日期显示格式
+      function updateDateDisplay(dateValue) {
+        const date = new Date(dateValue);
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        return `${year}年${month}月${day}日`;
+      }
+      
+      certDate.textContent = updateDateDisplay(formattedDate);
+      
+      // 照片上传处理
+      photoUploadArea.addEventListener('click', () => {
+        studentPhoto.click();
+      });
+      
+      studentPhoto.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const reader = new FileReader();
+          
+          reader.onload = (e) => {
+            photoPreview.src = e.target.result;
+            certPhoto.src = e.target.result;
+            photoPreviewContainer.classList.remove('hidden');
+            photoPreviewContainer.classList.add('block');
+          }
+          
+          reader.readAsDataURL(e.target.files[0]);
+        }
+      });
+      
+      // 拖拽上传照片
+      photoUploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        photoUploadArea.classList.add('border-primary');
+      });
+      
+      photoUploadArea.addEventListener('dragleave', () => {
+        photoUploadArea.classList.remove('border-primary');
+      });
+      
+      photoUploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        photoUploadArea.classList.remove('border-primary');
+        
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          const reader = new FileReader();
+          
+          reader.onload = (e) => {
+            photoPreview.src = e.target.result;
+            certPhoto.src = e.target.result;
+            photoPreviewContainer.classList.remove('hidden');
+            photoPreviewContainer.classList.add('block');
+          }
+          
+          reader.readAsDataURL(e.dataTransfer.files[0]);
+        }
+      });
+      
+      // 获取选中的技能
+      function getSelectedSkills() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+        const skills = Array.from(checkboxes).map(cb => cb.value);
+        return skills;
+      }
+      
+      // 表单输入实时更新预览
+      studentName.addEventListener('input', () => {
+        certName.textContent = studentName.value ? `${studentName.value} 同学` : '张三 同学';
+      });
+      
+      certificateDate.addEventListener('change', () => {
+        if (certificateDate.value) {
+          certDate.textContent = updateDateDisplay(certificateDate.value);
+        }
+      });
+      
+      // 监听技能选择变化
+      document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          const skills = getSelectedSkills();
+          if (skills.length > 0) {
+            certSkills.textContent = skills.join('、');
+          } else {
+            certSkills.textContent = '会计5要素×借贷翻译术';
+          }
+        });
+      });
+      
+      // 生成证书
+      generateBtn.addEventListener('click', () => {
+        // 验证输入
+        if (!studentName.value.trim()) {
+          alert('请输入学员姓名');
+          studentName.focus();
+          return;
+        }
+        
+        const selectedSkills = getSelectedSkills();
+        if (selectedSkills.length === 0) {
+          alert('请至少选择一项会计技能');
+          return;
+        }
+        
+        // 显示加载动画
+        loadingOverlay.classList.remove('hidden');
+        
+        // 模拟生成过程
+        setTimeout(() => {
+          // 隐藏加载动画
+          loadingOverlay.classList.add('hidden');
+          
+          // 启用下载按钮
+          downloadBtn.disabled = false;
+          
+          // 添加证书生成成功的动画效果
+          certificate.classList.add('animate-pulse');
+          setTimeout(() => {
+            certificate.classList.remove('animate-pulse');
+          }, 1000);
+          
+          // 提示用户
+          alert('证书生成成功，可以下载保存了！');
+        }, 1500);
+      });
+      
+      // 下载证书
+      downloadBtn.addEventListener('click', () => {
+        // 显示加载动画
+        loadingOverlay.classList.remove('hidden');
+        
+        // 使用html2canvas将证书转换为图片
+        html2canvas(certificate, {
+          scale: 2, // 提高分辨率
+          useCORS: true,
+          logging: false
+        }).then(canvas => {
+          // 隐藏加载动画
+          loadingOverlay.classList.add('hidden');
+          
+          // 创建下载链接
+          const link = document.createElement('a');
+          link.download = `${studentName.value || '学员'}_会计技能证书.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        }).catch(error => {
+          // 隐藏加载动画
+          loadingOverlay.classList.add('hidden');
+          console.error('下载失败:', error);
+          alert('证书下载失败，请重试');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
